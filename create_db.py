@@ -41,3 +41,6 @@ CREATE TABLE voto(
 		primary key(id_candidato, id_votacao),
 		foreign key (id_votacao) references votacao(id),
 		foreign key (id_candidato) references parlamentar(id));''')
+
+con.commit()
+con.close()
