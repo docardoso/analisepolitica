@@ -125,7 +125,10 @@ def main():
     conn = sqlite3.connect("py_politica.db")
     cursor = conn.cursor()
 
-    cursor.executemany("INSERT INTO parlamentar VALUES (?, ?, ?)", parlamentares)
+    for i in parlamentares:
+        if len(i) > 3:
+            print(i)
+    cursor.executemany("INSERT INTO parlamentar(id_API, nome, casa) VALUES (?, ?, ?)", parlamentares)
 
     conn.commit()
     conn.close()
