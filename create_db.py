@@ -19,7 +19,7 @@ CREATE TABLE partido(
 cursor.execute('''
 CREATE TABLE votacao( 
 		id integer primary key AUTOINCREMENT,
-		id_API integer not null,
+		id_API varchar not null,
 		tipo varchar(10) not null,
 		data date not null);''')
 
@@ -38,7 +38,7 @@ CREATE TABLE filia(
 cursor.execute('''
 CREATE TABLE voto( 
 		id_candidato integer not null,
-		id_votacao integer not null,
+		id_votacao varchar not null,
 		descricao integer not null,
 		primary key(id_candidato, id_votacao),
 		foreign key (id_votacao) references votacao(id),
