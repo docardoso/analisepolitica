@@ -11,12 +11,6 @@ CREATE TABLE parlamentar(
 		casa char(2) not null);''')
 
 cursor.execute('''
-CREATE TABLE partido( 
-		sigla varchar(5) not null,
-		uf char(2) not null,
-		primary key(sigla, uf));''')
-
-cursor.execute('''
 CREATE TABLE votacao( 
 		id integer primary key AUTOINCREMENT,
 		id_API varchar not null,
@@ -24,21 +18,11 @@ CREATE TABLE votacao(
 		data date not null);''')
 
 cursor.execute('''
-CREATE TABLE filia( 
-		id integer not null,
-		sigla varchar(5) not null,
-		uf char(2) not null,
-		data_in date not null,
-		data_out date null default null,
-		primary key (id, sigla, uf, data_in),
-		foreign key(id) references parlamentar(id),
-		foreign key(sigla) references partido(sigla),
-		foreign key(uf) references partido(uf));''')
-
-cursor.execute('''
 CREATE TABLE voto( 
 		id_candidato integer not null,
 		id_votacao varchar not null,
+		sigla varchar(5) not null,
+		uf char(2) not null
 		descricao integer not null,
 		primary key(id_candidato, id_votacao),
 		foreign key (id_votacao) references votacao(id),
