@@ -22,7 +22,7 @@ CREATE TABLE voto(
 		id_candidato integer not null,
 		id_votacao varchar not null,
 		sigla varchar(5) not null,
-		uf char(2) not null
+		uf char(2) not null,
 		descricao integer not null,
 		primary key(id_candidato, id_votacao),
 		foreign key (id_votacao) references votacao(id),

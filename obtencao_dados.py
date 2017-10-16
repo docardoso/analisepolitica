@@ -64,29 +64,33 @@ def get_votacoes_camara(propostas):
 				data = data[2]+'-'+data[1]+'-'+data[0]
 				votacao_camara.add((votacao['codsessao']+str(-cod), proposta[1], data))
 				for voto in votacao.find_all("deputado"):
+					partido = voto['partido'].strip()
 					if voto['idecadastro'] == '':
 						continue
 
 					if voto['partido'].strip() == 'Podemos':
 						partidos.add(('PODE', voto['uf']))
+						partido = 'PODE'
 						
 					elif voto['partido'].strip() == 'Solidaried':
 						partidos.add(('SD', voto['uf']))
+						partido = 'SD'
 						
 					elif voto['partido'].strip() == 'S/Partido':
 						partidos.add(('Outros', voto['uf']))
+						partido = 'Outros'
 
 					else:
 						partidos.add((voto['partido'], voto['uf']))
 
 					if voto['voto'] == 'Sim':
-						votos.add((voto["idecadastro"], votacao['codsessao']+str(-cod), 1))
+						votos.add((voto["idecadastro"], votacao['codsessao']+str(-cod), 1, partido, voto['uf']))
 
 					elif voto['voto'] == 'Não':
-						votos.add((voto["idecadastro"], votacao['codsessao']+str(-cod), -1))
+						votos.add((voto["idecadastro"], votacao['codsessao']+str(-cod), -1, partido, voto['uf']))
 
 					else:
-						votos.add((voto["idecadastro"], votacao['codsessao']+str(-cod), 0))
+						votos.add((voto["idecadastro"], votacao['codsessao']+str(-cod), 0, partido, voto['uf']))
 						
 					deputados.add((voto["idecadastro"], voto["nome"], "CF"))
 
@@ -135,16 +139,23 @@ def get_votacoes_senado(data):
 				partidos.add((partido,UF))
 
 			if votos.find('voto').text.strip() == 'Sim':
-				votos_senado.add((senador, cod_sessao, 1))
+				votos_senado.add((senador, cod_sessao, 1, partido, UF))
 
 			elif votos.find('voto').text.strip() == 'Não':
-				votos_senado.add((senador, cod_sessao, -1))
+				votos_senado.add((senador, cod_sessao, -1, partido, UF))
 
 			else:
-				votos_senado.add((senador, cod_sessao, 0))
+				votos_senado.add((senador, cod_sessao, 0, partido, UF))
+				
 			
 	return senadores, partidos, votos_senado, votacao_senado
 
+def get_bancadas():
+	conn = sqlite3.connect("py_politica.db")
+	cursor = conn.cursor()
+
+	bancada = dict()
+	
 
 def main():
 	conn = sqlite3.connect("py_politica.db")
@@ -175,21 +186,27 @@ def main():
 	cursor.executemany("INSERT INTO votacao(id, id_API, tipo, data) VALUES (null, ?, ?, ?)", votacao)
 	conn.commit()
 	
-	for partido in partidos:
-		try:
-			cursor.execute("INSERT INTO partido (sigla, uf) Values (?,?)", partido)
+	# for partido in partidos:
+	# 	try:
+	# 		cursor.execute("INSERT INTO partido (sigla, uf) Values (?,?)", partido)
 
-		except sqlite3.IntegrityError:
-				continue
+	# 	except sqlite3.IntegrityError:
+	# 			continue
 
 
 	for voto in votos:
+		# try:
 		id_parlamentar = cursor.execute('SELECT id FROM parlamentar WHERE id_API = {}'.format(voto[0])).fetchone()
 		id_votacao = cursor.execute('SELECT id FROM votacao WHERE id_API = "{}"'.format(str(voto[1]))).fetchone()
-		cursor.execute("INSERT INTO voto(id_candidato, id_votacao, descricao) VALUES ({}, {}, {})".format(int(id_parlamentar[0]), id_votacao[0], voto[2]))
-			
+		cursor.execute("INSERT INTO voto(id_candidato, id_votacao, sigla, uf, descricao) VALUES ({}, {}, {}, {}, {})".format(int(id_parlamentar[0]), id_votacao[0],voto[3], voto[4], voto[2]))
+		# except:
+		# 	print("Parlamentar: {}\nVotacao: {}\nVotoContent: {}".format(id_parlamentar[0], id_votacao[0], voto))
+		# 	quit()
+
 	conn.commit()
 	conn.close()
 
 if __name__ == '__main__':
 	main()
+
+	# (senador, cod_sessao, descricao, partido, UF)
