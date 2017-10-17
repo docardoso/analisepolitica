@@ -198,7 +198,7 @@ def main():
 		# try:
 		id_parlamentar = cursor.execute('SELECT id FROM parlamentar WHERE id_API = {}'.format(voto[0])).fetchone()
 		id_votacao = cursor.execute('SELECT id FROM votacao WHERE id_API = "{}"'.format(str(voto[1]))).fetchone()
-		cursor.execute("INSERT INTO voto(id_candidato, id_votacao, sigla, uf, descricao) VALUES ({}, {}, {}, {}, {})".format(int(id_parlamentar[0]), id_votacao[0],voto[3], voto[4], voto[2]))
+		cursor.execute("INSERT INTO voto(id_candidato, id_votacao, sigla, uf, descricao) VALUES ('{}', '{}', '{}', '{}', '{}')".format(int(id_parlamentar[0]), id_votacao[0],voto[3], voto[4], voto[2]))
 		# except:
 		# 	print("Parlamentar: {}\nVotacao: {}\nVotoContent: {}".format(id_parlamentar[0], id_votacao[0], voto))
 		# 	quit()
