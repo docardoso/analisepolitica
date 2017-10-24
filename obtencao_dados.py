@@ -1,3 +1,4 @@
+
 from bs4 import BeautifulSoup
 import pprint as pp
 import requests
@@ -61,7 +62,12 @@ def get_votacoes_camara(propostas):
 		for votacao in votacoesLista.find_all("votacao"): 
 			if votacao["data"].split("/")[2] == "2017":
 				data = str(votacao["data"]).split('/')
-				data = data[2]+'-'+data[1]+'-'+data[0]
+				if len(data[1]) == 1:
+					data = data[2]+'-'+'0'+data[1]+'-'+data[0]
+
+				else:
+					data = data[2]+'-'+data[1]+'-'+data[0]
+
 				votacao_camara.add((votacao['codsessao']+str(-cod), proposta[1], data))
 				for voto in votacao.find_all("deputado"):
 					partido = voto['partido'].strip()
@@ -182,8 +188,8 @@ def main():
 		votacao = votacao.union(votacao_senado)
 
 
-	cursor.executemany("INSERT INTO parlamentar(id, id_API, nome, casa) VALUES (null, ?, ?, ?)", parlamentares)
-	cursor.executemany("INSERT INTO votacao(id, id_API, tipo, data) VALUES (null, ?, ?, ?)", votacao)
+	cursor.executemany("INSERT INTO parlamentar(id_candidato, id_API, nome, casa) VALUES (null, ?, ?, ?)", parlamentares)
+	cursor.executemany("INSERT INTO votacao(id_votacao, id_API, tipo, data) VALUES (null, ?, ?, ?)", votacao)
 	conn.commit()
 	
 	# for partido in partidos:
@@ -196,8 +202,8 @@ def main():
 
 	for voto in votos:
 		# try:
-		id_parlamentar = cursor.execute('SELECT id FROM parlamentar WHERE id_API = {}'.format(voto[0])).fetchone()
-		id_votacao = cursor.execute('SELECT id FROM votacao WHERE id_API = "{}"'.format(str(voto[1]))).fetchone()
+		id_parlamentar = cursor.execute('SELECT id_candidato FROM parlamentar WHERE id_API = {}'.format(voto[0])).fetchone()
+		id_votacao = cursor.execute('SELECT id_votacao FROM votacao WHERE id_API = "{}"'.format(str(voto[1]))).fetchone()
 		cursor.execute("INSERT INTO voto(id_candidato, id_votacao, sigla, uf, descricao) VALUES ('{}', '{}', '{}', '{}', '{}')".format(int(id_parlamentar[0]), id_votacao[0],voto[3], voto[4], voto[2]))
 		# except:
 		# 	print("Parlamentar: {}\nVotacao: {}\nVotoContent: {}".format(id_parlamentar[0], id_votacao[0], voto))
