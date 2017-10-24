@@ -5,14 +5,14 @@ cursor = con.cursor()
 
 cursor.execute('''
 CREATE TABLE parlamentar( 
-		id integer primary key AUTOINCREMENT,
+		id_candidato integer primary key AUTOINCREMENT,
 		id_API integer not null,
 		nome varchar(50) not null,
 		casa char(2) not null);''')
 
 cursor.execute('''
 CREATE TABLE votacao( 
-		id integer primary key AUTOINCREMENT,
+		id_votacao integer primary key AUTOINCREMENT,
 		id_API varchar not null,
 		tipo varchar(10) not null,
 		data date not null);''')
@@ -21,7 +21,7 @@ cursor.execute('''
 CREATE TABLE voto( 
 		id_candidato integer not null,
 		id_votacao varchar not null,
-		sigla varchar(5) not null,
+		sigla varchar not null,
 		uf char(2) not null,
 		descricao integer not null,
 		primary key(id_candidato, id_votacao),
