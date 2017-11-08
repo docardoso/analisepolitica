@@ -156,7 +156,7 @@ def get_votacoes_senado(data):
 
     return senadores, partidos, votos_senado, votacao_senado
 
-def get_bancadas(dataInicio, dataFim):
+def get_bancadas(dataInicio, dataFim, casa):
     conn = sqlite3.connect("py_politica.db")
     cursor = conn.cursor()
     
@@ -165,15 +165,18 @@ def get_bancadas(dataInicio, dataFim):
     dataInicio = dataInicio.split('-')
     dataFim = dataFim.split('-')
 
-    listaBancada = cursor.execute('''select sigla, count(distinct id_candidato) from voto join votacao
-                             where votacao.ano_mes_dia > "{}-{}-{}" and votacao.ano_mes_dia < "{}-{}-{}"
-                             and votacao.id_votacao=voto.id_votacao group by sigla'''.format(dataInicio[0], dataInicio[1], dataInicio[2], dataFim[0], dataFim[1], dataFim[2])).fetchall()
+    listaBancada = cursor.execute('''select sigla, count(distinct voto.id_candidato) from voto join votacao join parlamentar
+                                    where votacao.ano_mes_dia > "{}-{}-{}" 
+                                    and votacao.ano_mes_dia < "{}-{}-{}"
+                                    and votacao.id_votacao=voto.id_votacao
+                                    and voto.id_candidato=parlamentar.id_candidato
+                                    and parlamentar.casa="{}"
+                                    group by sigla'''.format(dataInicio[0], dataInicio[1], dataInicio[2], dataFim[0], dataFim[1], dataFim[2], casa)).fetchall()
     
     for i in listaBancada:
         bancada[i[0]] = i[1]
 
     return bancada  
-
 
 def main():
     conn = sqlite3.connect("py_politica.db")
