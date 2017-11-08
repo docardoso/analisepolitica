@@ -15,7 +15,7 @@ CREATE TABLE votacao(
 		id_votacao integer primary key AUTOINCREMENT,
 		id_API varchar not null,
 		tipo varchar(10) not null,
-		data date not null);''')
+		ano_mes_dia date not null);''')
 
 cursor.execute('''
 CREATE TABLE voto( 
