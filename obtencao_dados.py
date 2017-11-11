@@ -60,15 +60,23 @@ def get_votacoes_camara(propostas):
         cod = 1
 
         for votacao in votacoesLista.find_all("votacao"):
+            hora = votacao["hora"]+':00'
             if votacao["data"].split("/")[2] == "2017":
                 data = str(votacao["data"]).split('/')
                 if len(data[1]) == 1:
-                    data = data[2]+'-'+'0'+data[1]+'-'+data[0]
+                    if len(data[0])==1:
+                        data = data[2]+'-'+'0'+data[1]+'-'+'0'+data[0]
+                    else:
+                        data = data[2]+'-'+'0'+data[1]+'-'+data[0]
 
                 else:
-                    data = data[2]+'-'+data[1]+'-'+data[0]
+                    if len(data[0]) == 1:
+                        data = data[2]+'-'+data[1]+'-'+'0'+data[0]
 
-                votacao_camara.add((votacao['codsessao']+str(-cod), proposta[1], data))
+                    else:
+                        data = data[2]+'-'+data[1]+'-'+data[0]
+
+                votacao_camara.add((votacao['codsessao']+str(-cod), proposta[1], data, hora))
                 for voto in votacao.find_all("deputado"):
                     partido = voto['partido'].strip()
                     if voto['idecadastro'] == '':
@@ -122,8 +130,9 @@ def get_votacoes_senado(data):
 
         cod_sessao = votacao.find('codigosessaovotacao').text
         data_sessao = votacao.find('datasessao').text
+        hora_sessao = votacao.find('horainicio').text + ':00'
         tipo = votacao.find('siglamateria').text
-        votacao_senado.add((cod_sessao, tipo, data_sessao))
+        votacao_senado.add((cod_sessao, tipo, data_sessao, hora_sessao))
 
         for votos in votacao.find_all("votoparlamentar"):
             senador = votos.find("codigoparlamentar").text.strip()
@@ -204,7 +213,7 @@ def main():
 
 
     cursor.executemany("INSERT INTO parlamentar(id_candidato, id_API, nome, casa) VALUES (null, ?, ?, ?)", parlamentares)
-    cursor.executemany("INSERT INTO votacao(id_votacao, id_API, tipo, ano_mes_dia) VALUES (null, ?, ?, ?)", votacao)
+    cursor.executemany("INSERT INTO votacao(id_votacao, id_API, tipo, ano_mes_dia, hora) VALUES (null, ?, ?, ?, ?)", votacao)
     conn.commit()
 
     # for partido in partidos:
