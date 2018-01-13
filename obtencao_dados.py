@@ -10,16 +10,18 @@ def get_proposicoes_camara(ano):
 
     for info in lista_props.find_all('proposicoes'):
         for proposicao in info.find_all('proposicao'):
-            for nome_proposicao in proposicao.find_all('nomeproposicao'):
-                nome_proposicao = nome_proposicao.text
-                if '=>' in nome_proposicao: # Verifica se houve uma mudança na proposicao (Ex: PL que virou PEC) e pega o nome mais recente
-                    nome_proposicao = nome_proposicao.split(' => ')[1]
+            '''
+            nome_proposicao = proposicao.find('nomeproposicao').text
+            if '=>' in nome_proposicao: # Verifica se houve uma mudança na proposicao (Ex: PL que virou PEC) e pega o nome mais recente
+                nome_proposicao = nome_proposicao.split(' => ')[1]
 
-                nome_proposicao = nome_proposicao.split()
-                tipo = nome_proposicao[0]
-                numero, ano = nome_proposicao[1].split('/')
-                proposicao = (numero, tipo, ano)
-                proposicoes.add(proposicao)
+            nome_proposicao = nome_proposicao.split()
+            tipo = nome_proposicao[0]
+            numero, ano = nome_proposicao[1].split('/')
+            proposicao = (numero, tipo, ano)
+            proposicoes.add(proposicao)
+            '''
+            proposicoes.add(proposicao.find('codproposicao').text)
 
         return proposicoes
 
@@ -31,7 +33,7 @@ def get_votacoes_camara(proposicoes):
 
     for proposicao in proposicoes:
         votacoesLista = requests.get('http://www.camara.leg.br/SitCamaraWS/Proposicoes.asmx/ObterVotacaoProposicao?tipo={}&numero={}&ano={}'.format(proposicao[1], proposicao[0], proposicao[2]))
-        votacoesLista = BeautifulSoup(votacoesLista.text, 'html.parser')
+        votacoesLista = BeautifulSoup(votacoesLista.text, 'lxml')
         cod = 1
         print('cheguei')
 
