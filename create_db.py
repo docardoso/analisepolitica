@@ -12,27 +12,28 @@ CREATE TABLE parlamentar(
 cursor.execute('''
 CREATE TABLE materia( 
 		id_materia varchar primary key,
-		tipo varchar not null,
-		autor varchar not null,
-		numero integer not null,
-		data_apresentacao date not null,
-		ementa varchar not null,
-		temas varchar not null,
-		status varchar not_null);''')
+		tipo varchar null,
+		autor varchar null,
+		numero integer null,
+		data_apresentacao date null,
+		ementa varchar null,
+		temas varchar null,
+		apelido varchar null,
+		status varchar null);''')
 
 cursor.execute('''
 CREATE TABLE votacao( 
 		id_votacao varchar primary key,
-		id_materia varchar not null,
+		id_materia varchar null,
 		dataHoraInicio datetime not null,
 		foreign key(id_materia) references materia(id_materia));''')
 
 cursor.execute('''
 CREATE TABLE votacao_secreta( 
 		id_votacao varchar not null,
-		placarSim integer not null,
-		placarNao integer not null,
-		placarAbs integer not null,
+		placarSim integer null,
+		placarNao integer null,
+		placarAbs integer null,
 		primary key(id_votacao),
 		foreign key(id_votacao) references votacao(id_votacao));''')
 
